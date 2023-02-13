@@ -19,11 +19,6 @@ interface Props {
   labelReferenceLine: string;
   labelXAxis: string;
   labelYAxis: string;
-  lineColorCallback: (
-    value: number,
-    palette: any,
-    limit: number
-  ) => string | undefined;
   referenceLineValue: number;
 }
 
@@ -35,23 +30,25 @@ const LineChart: React.FC<Props> = ({
   labelReferenceLine,
   labelXAxis,
   labelYAxis,
-  lineColorCallback,
   referenceLineValue,
 }) => {
   // @ts-ignore
-  const { palette } = useTheme();
+  const { fonts, palette } = useTheme();
 
   // Labels
   const referenceLineLabel: ImplicitLabelType = {
+    fontFamily: fonts.system,
     value: labelReferenceLine,
     position: 'insideBottomRight',
   };
   const xAxisLabel: ImplicitLabelType = {
+    fontFamily: fonts.system,
     value: labelXAxis,
     offset: -5,
     position: 'insideBottom',
   };
   const yAxisLabel: ImplicitLabelType = {
+    fontFamily: fonts.system,
     value: labelYAxis,
     angle: -90,
     position: 'insideLeft',
@@ -60,7 +57,9 @@ const LineChart: React.FC<Props> = ({
   // Challenges
   // 1. Adding an individual label to the <Line> component with proper formatting and positioning
   // 2. Conditionally coloring line segments, no callback exists, have to use <linearGradient> which mean we need accurate percentages
+  //   - This requires more complex calculations and creates coloring issues with line dots
   // 3. Axis labels are tough to control (formatting and positioning)
+  // 4. No global way to set fonts and other styling, we have to set it for every implementation
 
   return (
     <ResponsiveContainer width={'95%'} height={600}>
@@ -77,8 +76,19 @@ const LineChart: React.FC<Props> = ({
         </defs>
         <Line dataKey={dataKey} stroke={'url(#gradient)'} strokeWidth={3} />
         <ReferenceLine y={referenceLineValue} label={referenceLineLabel} />
-        <XAxis dataKey={dataKeyXAxis} interval={0} label={xAxisLabel} />
-        <YAxis domain={domainYAxis} label={yAxisLabel} />
+        <XAxis
+          fontFamily={fonts.system}
+          fontSize={14}
+          dataKey={dataKeyXAxis}
+          interval={0}
+          label={xAxisLabel}
+        />
+        <YAxis
+          fontFamily={fonts.system}
+          fontSize={14}
+          domain={domainYAxis}
+          label={yAxisLabel}
+        />
       </RechartsLineChart>
     </ResponsiveContainer>
   );
